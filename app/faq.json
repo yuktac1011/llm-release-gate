@@ -1,0 +1,22 @@
+[
+  {"id": 1, "question": "How do I reset my password?", "answer": "Click 'Forgot password' on the login page and enter your email. The reset link is valid for 30 minutes."},
+  {"id": 2, "question": "How do I change my email address?", "answer": "Go to Settings > Account > Email, enter the new address and confirm using the code we send to it."},
+  {"id": 3, "question": "What plans and pricing do you offer?", "answer": "Free: 5 GB. Pro: $9/month for 100 GB. Team: $20/user/month for 1 TB shared storage."},
+  {"id": 4, "question": "Is there a free trial?", "answer": "Yes. Pro has a 14-day free trial and no credit card is required."},
+  {"id": 5, "question": "How do I cancel my subscription?", "answer": "Go to Settings > Billing > Cancel plan. You keep access until the end of the current billing period."},
+  {"id": 6, "question": "What is your refund policy?", "answer": "We give a full refund if you ask within 14 days of your first purchase. After 14 days, payments are not refunded."},
+  {"id": 7, "question": "Which payment methods are accepted?", "answer": "Visa, Mastercard, UPI and PayPal. We do not accept cryptocurrency or cash."},
+  {"id": 8, "question": "Where can I download my invoices?", "answer": "Go to Settings > Billing > Invoices and download any invoice as a PDF."},
+  {"id": 9, "question": "What happens when I run out of storage?", "answer": "New uploads are blocked, but your existing files stay safe. Upgrade your plan or delete files to continue uploading."},
+  {"id": 10, "question": "What is the maximum file size I can upload?", "answer": "Free accounts can upload files up to 250 MB. Pro and Team accounts can upload files up to 2 GB."},
+  {"id": 11, "question": "Can I recover a deleted file?", "answer": "Yes. Deleted files stay in the Trash for 30 days and can be restored from there."},
+  {"id": 12, "question": "How do I share a file?", "answer": "Click the Share button on the file to create a link. Pro users can also add a password and an expiry date to the link."},
+  {"id": 13, "question": "How do I turn on two-factor authentication?", "answer": "Go to Settings > Security > Two-factor authentication and link an authenticator app. SMS codes are not supported."},
+  {"id": 14, "question": "Is my data encrypted?", "answer": "Yes. Files are encrypted with AES-256 at rest and TLS 1.3 in transit."},
+  {"id": 15, "question": "Which devices and platforms are supported?", "answer": "Web, Windows, macOS, Android and iOS. There is no Linux desktop app at the moment."},
+  {"id": 16, "question": "Can I access my files offline?", "answer": "Yes, on the mobile apps. Mark a file as 'Available offline'. This feature is for Pro and Team plans."},
+  {"id": 17, "question": "How do I add team members?", "answer": "On the Team plan, open Admin console > Invite members. A team can have up to 50 members."},
+  {"id": 18, "question": "How do I contact support?", "answer": "Email support@cloudnest.example or use live chat Monday to Friday, 9am to 6pm IST. We reply to emails within 24 hours."},
+  {"id": 19, "question": "How do I delete my account?", "answer": "Go to Settings > Account > Delete account. Deletion becomes permanent after a 14-day grace period."},
+  {"id": 20, "question": "My files are not syncing. What should I do?", "answer": "Pause and resume sync, check your internet connection, update the app, and if it still fails, sign out and sign in again."}
+]
