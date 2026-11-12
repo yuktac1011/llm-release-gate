@@ -92,8 +92,10 @@ def _real(system: str, user: str, settings: dict) -> tuple[str, int, int]:
 
     data = r.json()
     usage = data.get("usage", {})
-    return (data["choices"][0]["message"]["content"].strip(),
-            usage.get("prompt_tokens", 0), usage.get("completion_tokens", 0))
+    text = (data["choices"][0]["message"].get("content") or "").strip()
+    if not text:
+        raise LLMError("Model returned empty content (max_tokens may be too low for a reasoning model).")
+    return text, usage.get("prompt_tokens", 0), usage.get("completion_tokens", 0)
 
 
 def call_llm(system: str, user: str, settings: dict) -> LLMResponse:

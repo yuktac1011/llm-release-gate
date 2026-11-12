@@ -76,7 +76,7 @@ def judge(case: dict, answer: str, reference: str, model_name: str) -> dict:
     prompt = JUDGE_PROMPT.format(question=case["question"], answer=answer,
                                  reference=reference or "(none)", behaviour=behaviour)
     settings = {"name": os.getenv("JUDGE_MODEL", model_name), "temperature": 0,
-                "max_tokens": 150, "timeout_s": 30}
+                "max_tokens": 800, "timeout_s": 30}
     try:
         text = call_llm("You output only JSON.", prompt, settings).text
         m = re.search(r"\{.*\}", text, re.S)
