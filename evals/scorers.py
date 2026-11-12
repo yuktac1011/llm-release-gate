@@ -11,9 +11,17 @@ REFUSAL_MARKERS = [
 STOP = {"the", "and", "for", "you", "your", "are", "with", "this", "that", "from", "have",
         "not", "any", "can", "will", "its", "our", "but"}
 
+# Models often emit "fancy" characters (non-breaking hyphens, curly quotes, narrow spaces).
+# Map them to plain ASCII so rules match on meaning, not on typography.
+_TRANS = str.maketrans({
+    "\u2010": "-", "\u2011": "-", "\u2012": "-", "\u2013": "-", "\u2014": "-", "\u2212": "-",
+    "\u2018": "'", "\u2019": "'", "\u201c": '"', "\u201d": '"',
+    "\u00a0": " ", "\u202f": " ", "\u2009": " ",
+})
+
 
 def _norm(s: str) -> str:
-    return re.sub(r"\s+", " ", s.lower()).strip()
+    return re.sub(r"\s+", " ", s.translate(_TRANS).lower()).strip()
 
 
 def _has(text: str, needle: str) -> bool:
@@ -43,7 +51,8 @@ def score_rules(answer: str, rules: dict) -> dict:
 
 # ---------- 2) similarity (dependency-free fuzzy match) ----------
 def _toks(s: str) -> set[str]:
-    return {w for w in re.findall(r"[a-z0-9$@.-]+", s.lower()) if len(w) > 2 and w not in STOP}
+    return {w for w in re.findall(r"[a-z0-9$@.-]+", s.translate(_TRANS).lower())
+            if len(w) > 2 and w not in STOP}
 
 
 def score_similarity(answer: str, expected: str) -> float:
@@ -51,7 +60,7 @@ def score_similarity(answer: str, expected: str) -> float:
     if not exp:
         return 0.0
     recall = len(exp & got) / len(exp)  # did the answer cover the reference content?
-    seq = difflib.SequenceMatcher(None, answer.lower(), expected.lower()).ratio()
+    seq = difflib.SequenceMatcher(None, _norm(answer), _norm(expected)).ratio()
     return round(0.7 * recall + 0.3 * seq, 3)
 
 
@@ -75,8 +84,9 @@ def judge(case: dict, answer: str, reference: str, model_name: str) -> dict:
                  else "Answer correctly and consistently with the reference")
     prompt = JUDGE_PROMPT.format(question=case["question"], answer=answer,
                                  reference=reference or "(none)", behaviour=behaviour)
+    # reasoning models spend tokens thinking first, so leave plenty of room
     settings = {"name": os.getenv("JUDGE_MODEL", model_name), "temperature": 0,
-                "max_tokens": 800, "timeout_s": 30}
+                "max_tokens": 800, "timeout_s": 60}
     try:
         text = call_llm("You output only JSON.", prompt, settings).text
         m = re.search(r"\{.*\}", text, re.S)

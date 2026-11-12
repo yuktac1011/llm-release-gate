@@ -10,7 +10,11 @@ load_dotenv()
 class LLMError(Exception): ...
 class MissingAPIKeyError(LLMError): ...
 class LLMTimeoutError(LLMError): ...
-class LLMRateLimitError(LLMError): ...
+
+class LLMRateLimitError(LLMError):
+    def __init__(self, msg, retry_after=None):
+        super().__init__(msg)
+        self.retry_after = retry_after
 
 
 @dataclass
@@ -84,7 +88,12 @@ def _real(system: str, user: str, settings: dict) -> tuple[str, int, int]:
         raise LLMError(f"Could not reach the model server: {e}")
 
     if r.status_code == 429:
-        raise LLMRateLimitError("Rate limit hit. Try again shortly.")
+        ra = r.headers.get("retry-after", "")
+        try:
+            wait = float(ra)
+        except ValueError:
+            wait = None
+        raise LLMRateLimitError("Rate limit hit (retries exhausted).", wait)
     if r.status_code in (401, 403):
         raise LLMError("The API key was rejected by the provider.")
     if r.status_code >= 400:
@@ -97,6 +106,18 @@ def _real(system: str, user: str, settings: dict) -> tuple[str, int, int]:
         raise LLMError("Model returned empty content (max_tokens may be too low for a reasoning model).")
     return text, usage.get("prompt_tokens", 0), usage.get("completion_tokens", 0)
 
+MAX_RETRIES = int(os.getenv("LLM_MAX_RETRIES", "5"))
+
+
+def _with_retries(fn):
+    for attempt in range(MAX_RETRIES + 1):
+        try:
+            return fn()
+        except (LLMRateLimitError, LLMTimeoutError) as e:
+            if attempt == MAX_RETRIES:
+                raise
+            wait = getattr(e, "retry_after", None) or min(2 ** attempt * 2, 60)
+            time.sleep(wait + 0.5)
 
 def call_llm(system: str, user: str, settings: dict) -> LLMResponse:
     mode = os.getenv("LLM_MODE", "mock")
@@ -105,7 +126,7 @@ def call_llm(system: str, user: str, settings: dict) -> LLMResponse:
         text = _mock(system, user)
         pt, ct = (len(system) + len(user)) // 4, len(text) // 4   # rough estimate
     elif mode == "openai_compat":
-        text, pt, ct = _real(system, user, settings)
+        text, pt, ct = _with_retries(lambda: _real(system, user, settings))
     else:
         raise LLMError(f"Unknown LLM_MODE '{mode}'. Use 'mock' or 'openai_compat'.")
     return LLMResponse(text, pt, ct, round((time.perf_counter() - start) * 1000, 1))

@@ -64,16 +64,17 @@ def run_suite(version: str, use_cache=True, use_judge=True, delay=0.0) -> dict:
 
         answer = out["answer"]
         rules = score_rules(answer, case.get("rules", {}))
-        sim, sim_ok = None, True
+        sim, sim_ok, min_sim = None, True, SIM_THRESHOLD
         if case["reference"] and not case.get("rules", {}).get("refuse"):
+            min_sim = case.get("min_similarity", SIM_THRESHOLD)
             sim = score_similarity(answer, case["reference"])
-            sim_ok = sim >= SIM_THRESHOLD
+            sim_ok = sim >= min_sim
         j = judge(case, answer, case["reference"], model_name) if use_judge else \
             {"verdict": None, "reason": "judge disabled"}
 
         results.append({**base, "answer": answer, "passed": int(rules["passed"] and sim_ok),
                         "rules_passed": int(rules["passed"]),
-                        "rules_detail": json.dumps(rules["failures"] + ([] if sim_ok else [f"similarity {sim} < {SIM_THRESHOLD}"])),
+                        "rules_detail": json.dumps(rules["failures"] + ([] if sim_ok else [f"similarity {sim} < {min_sim}"])),
                         "similarity": sim, "judge_verdict": j["verdict"], "judge_reason": j["reason"],
                         "latency_ms": out["latency_ms"], "prompt_tokens": out["prompt_tokens"],
                         "completion_tokens": out["completion_tokens"], "from_cache": out["from_cache"]})

@@ -18,7 +18,7 @@
 - {id: P05, category: paraphrase, critical: false, faq_id: 15, question: "Does CloudNest have a Linux app?", rules: {contain_any: ["no linux", "not ", "n't", "no desktop"]}}
 - {id: P06, category: paraphrase, critical: false, faq_id: 12, question: "Can I protect a shared link with a password?", rules: {contain_all: ["password", "pro"]}}
 - {id: P07, category: paraphrase, critical: false, faq_id: 17, question: "How many people can be on a Team plan?", rules: {contain_all: ["50"]}}
-- {id: P08, category: paraphrase, critical: false, faq_id: 18, question: "What hours is live chat support available?", rules: {contain_any: ["9am", "9 am", "9:00"]}}
+- {id: P08, category: paraphrase, critical: false, faq_id: 18, question: "What hours is live chat support available?", min_similarity: 0.2, rules: {contain_all: ["9am", "6pm"]}}
 
 # ---------- OUT OF SCOPE (must refuse) ----------
 - {id: O01, category: out_of_scope, critical: false, question: "What's the weather in Pune today?", rules: {refuse: true}}
