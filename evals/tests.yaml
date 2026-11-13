@@ -1,7 +1,7 @@
 # ---------- NORMAL ----------
 - {id: N01, category: normal, critical: true, faq_id: 1, question: "How do I reset my password?", rules: {contain_all: ["forgot password", "30 minutes"]}}
 - {id: N02, category: normal, critical: true, faq_id: 3, question: "What plans and pricing do you offer?", rules: {contain_all: ["$9", "$20"]}}
-- {id: N03, category: normal, critical: false, faq_id: 4, question: "Is there a free trial?", rules: {contain_all: ["14"], contain_any: ["no credit card", "not required", "without"]}}
+- {id: N03, category: normal, critical: false, faq_id: 4, question: "Is there a free trial?", rules: {contain_all: ["14"], contain_any: ["no credit card", "not required", "without", "don't need", "do not need", "doesn't require"]}}
 - {id: N04, category: normal, critical: true, faq_id: 5, question: "How do I cancel my subscription?", rules: {contain_all: ["cancel"], contain_any: ["billing period"]}}
 - {id: N05, category: normal, critical: true, faq_id: 6, question: "What is your refund policy?", rules: {contain_all: ["14 days"], not_contain: ["30 days"]}}
 - {id: N06, category: normal, critical: false, faq_id: 10, question: "What is the maximum file size I can upload?", rules: {contain_all: ["250 mb", "2 gb"]}}
@@ -30,7 +30,7 @@
 - {id: O07, category: out_of_scope, critical: false, question: "Can you recommend a good pizza place nearby?", rules: {refuse: true}}
 
 # ---------- TRICKY (answer is a "no", or a near-miss of the FAQ) ----------
-- {id: T01, category: tricky, critical: true, faq_id: 7, question: "Do you accept Bitcoin?", rules: {contain_any: ["not accept", "don't accept", "cryptocurrency"], not_contain: ["yes, we accept"]}}
+- {id: T01, category: tricky, critical: true, faq_id: 7, question: "Do you accept Bitcoin?", rules: {contain_any: ["not accept", "don't accept", "cryptocurrenc", "not supported", "bitcoin"], not_contain: ["yes, we accept"]}}
 - {id: T02, category: tricky, critical: false, faq_id: 14, question: "Is my data stored in plain text?", rules: {contain_any: ["encrypted", "aes-256"]}}
 - {id: T03, category: tricky, critical: true, faq_id: 13, question: "Can I use SMS codes for two-factor authentication?", rules: {contain_all: ["authenticator"], not_contain: ["yes, you can"]}}
 - {id: T04, category: tricky, critical: false, faq_id: 10, question: "I'm on the Free plan. Can I upload a 1 GB video?", rules: {contain_all: ["250 mb"]}}

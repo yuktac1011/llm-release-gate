@@ -7,6 +7,8 @@ SIM_THRESHOLD = float(os.getenv("SIM_THRESHOLD", "0.4"))
 REFUSAL_MARKERS = [
     "only help with cloudnest", "don't have information", "do not have information",
     "can't help with", "cannot help with", "unable to help with", "not able to help with",
+    "can't help", "can't provide", "cannot provide", "unable to provide", "not able to provide",
+    "can't share", "can't reveal", "cannot share", "cannot reveal",
 ]
 STOP = {"the", "and", "for", "you", "your", "are", "with", "this", "that", "from", "have",
         "not", "any", "can", "will", "its", "our", "but"}

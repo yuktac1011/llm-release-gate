@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt Release Gate</title>
+<style>
+:root{--bg:#fff;--fg:#1a1a1a;--mut:#666;--line:#ddd;--ok:#1a7f37;--bad:#cf222e;--warn:#9a6700;--card:#f6f8fa}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1117;--fg:#e6edf3;--mut:#8b949e;--line:#30363d;--ok:#3fb950;--bad:#f85149;--warn:#d29922;--card:#161b22}}
+body{font:14px/1.5 system-ui,sans-serif;background:var(--bg);color:var(--fg);max-width:1100px;margin:24px auto;padding:0 16px}
+h1{font-size:20px} h2{font-size:16px;margin-top:32px}
+table{width:100%;border-collapse:collapse;margin:8px 0}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--mut);font-weight:600}
+tbody tr[data-id]{cursor:pointer} tbody tr[data-id]:hover{background:var(--card)}
+.dim{opacity:.5} .ok{color:var(--ok)} .bad{color:var(--bad)} .warn{color:var(--warn)} .mut{color:var(--mut)}
+.wrap{overflow-x:auto}
+select,button{font:inherit;padding:4px 8px;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:6px}
+.pill{display:inline-block;padding:0 8px;border-radius:10px;border:1px solid currentColor;font-size:12px}
+.ans{max-width:420px;white-space:pre-wrap;word-break:break-word}
+.box{background:var(--card);padding:10px 14px;border-radius:8px;margin:8px 0}
+</style>
+</head>
+<body>
+<h1>Prompt Release Gate</h1>
+<p class="mut">Click a run to see its failed cases. Runs with LLM errors are dimmed (infrastructure problems, not prompt quality).</p>
+
+<h2>Runs</h2>
+<div class="wrap"><table id="runs">
+<thead><tr><th>Run</th><th>Prompt</th><th>Model</th><th>Mode</th><th>Pass rate</th><th>Critical fails</th><th>Errors</th><th>When (UTC)</th></tr></thead>
+<tbody></tbody></table></div>
+
+<h2 id="detailTitle">Failed cases</h2>
+<div id="detail" class="mut">Select a run above.</div>
+
+<h2>Compare two runs</h2>
+<p>Baseline <select id="base"></select> Candidate <select id="cand"></select> <button id="go">Compare</button></p>
+<div id="diff"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pct = x => (x * 100).toFixed(1) + "%";
+async function j(u){ const r = await fetch(u); if(!r.ok) throw new Error(await r.text()); return r.json(); }
+
+async function loadRuns(){
+  const runs = await j("/api/runs");
+  const opts = runs.map(r => `<option value="${r.id}">#${r.id} ${esc(r.prompt_version)} (${pct(r.pass_rate)})</option>`).join("");
+  $("#base").innerHTML = opts; $("#cand").innerHTML = opts;
+  $("#runs tbody").innerHTML = runs.map(r => `
+    <tr data-id="${r.id}" class="${r.errors ? "dim" : ""}">
+      <td>#${r.id}</td><td>${esc(r.prompt_version)}</td><td>${esc(r.model)}</td><td>${esc(r.mode)}</td>
+      <td class="${r.pass_rate >= 0.9 ? "ok" : "bad"}">${pct(r.pass_rate)} (${r.passed}/${r.total})</td>
+      <td class="${r.critical_failed ? "bad" : "ok"}">${r.critical_failed}</td>
+      <td>${r.errors}</td><td class="mut">${esc(r.created_at)}</td></tr>`).join("");
+  document.querySelectorAll("#runs tbody tr").forEach(tr => tr.onclick = () => showRun(tr.dataset.id));
+}
+
+async function showRun(id){
+  const d = await j("/api/runs/" + id);
+  const failed = d.results.filter(r => !r.passed);
+  $("#detailTitle").textContent = `Failed cases: run #${id} (${d.run.prompt_version})`;
+  if(!failed.length){ $("#detail").innerHTML = '<p class="ok">All cases passed.</p>'; return; }
+  $("#detail").innerHTML = `<div class="wrap"><table><thead><tr><th>Case</th><th>Question</th><th>Answer</th><th>Why it failed</th></tr></thead><tbody>` +
+    failed.map(r => `<tr>
+      <td>${esc(r.case_id)}${r.critical ? ' <span class="pill bad">critical</span>' : ""}</td>
+      <td>${esc(r.question)}</td>
+      <td class="ans">${esc(r.answer) || '<span class="mut">(no answer)</span>'}</td>
+      <td>${esc(JSON.parse(r.rules_detail || "[]").join("; "))}</td></tr>`).join("") + "</tbody></table></div>";
+}
+
+const STATUS = {broken:"bad", fixed:"ok", still_failing:"warn", error:"bad", new:"mut"};
+async function showDiff(){
+  const d = await j(`/api/compare?base=${$("#base").value}&cand=${$("#cand").value}`);
+  const b = d.baseline, c = d.candidate;
+  const n = s => d.cases.filter(x => x.status === s).length;
+  const brokenCrit = d.cases.filter(x => x.status === "broken" && x.critical).length;
+  const changed = d.cases.filter(x => x.status !== "still_passing");
+  $("#diff").innerHTML = `
+    <div class="box">
+      <b>${esc(b.prompt_version)}</b> ${pct(b.pass_rate)} &rarr; <b>${esc(c.prompt_version)}</b> ${pct(c.pass_rate)}
+      &nbsp;|&nbsp; fixed <span class="ok">${n("fixed")}</span>
+      &nbsp;|&nbsp; broken <span class="${n("broken") ? "bad" : "ok"}">${n("broken")}</span> (${brokenCrit} critical)
+      &nbsp;|&nbsp; still failing ${n("still_failing")} &nbsp;|&nbsp; still passing ${n("still_passing")}<br>
+      <span class="mut">median latency ${b.median_latency_ms} &rarr; ${c.median_latency_ms} ms &nbsp;|&nbsp;
+      tokens out ${b.completion_tokens} &rarr; ${c.completion_tokens} &nbsp;|&nbsp; est. cost $${b.est_cost_usd} &rarr; $${c.est_cost_usd}</span>
+    </div>` + (changed.length ? `<div class="wrap"><table><thead><tr><th>Case</th><th>Status</th><th>Question</th><th>Baseline answer</th><th>Candidate answer</th></tr></thead><tbody>` +
+    changed.map(x => `<tr>
+      <td>${esc(x.case_id)}${x.critical ? ' <span class="pill bad">critical</span>' : ""}</td>
+      <td class="${STATUS[x.status] || ""}">${esc(x.status.replace("_", " "))}</td>
+      <td>${esc(x.question)}</td>
+      <td class="ans">${esc(x.baseline_answer)}</td>
+      <td class="ans">${esc(x.candidate_answer)}</td></tr>`).join("") + "</tbody></table></div>"
+    : '<p class="ok">No differences: every case behaves the same in both runs.</p>');
+}
+$("#go").onclick = () => showDiff().catch(e => $("#diff").textContent = e.message);
+loadRuns();
+</script>
+</body>
+</html>

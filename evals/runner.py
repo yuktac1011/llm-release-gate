@@ -6,14 +6,18 @@ import yaml
 from app.llm_client import LLMError, MissingAPIKeyError
 from app.service import ROOT, answer_question, load_faq, load_prompt
 from evals import db
-from evals.scorers import SIM_THRESHOLD, judge, score_rules, score_similarity
+from evals.scorers import judge, score_rules, score_similarity
 
 TESTS_PATH = ROOT / "evals" / "tests.yaml"
 
 
 def load_cases() -> list[dict]:
     faq = {e["id"]: e["answer"] for e in load_faq()}
+    if not TESTS_PATH.exists():
+        sys.exit(f"ERROR: test file not found at {TESTS_PATH}")
     cases = yaml.safe_load(TESTS_PATH.read_text(encoding="utf-8"))
+    if not cases:
+        sys.exit(f"ERROR: {TESTS_PATH.name} is empty. Add test cases and save the file.")
     for c in cases:
         c["reference"] = faq.get(c.get("faq_id"), "")
     return cases
@@ -64,17 +68,21 @@ def run_suite(version: str, use_cache=True, use_judge=True, delay=0.0) -> dict:
 
         answer = out["answer"]
         rules = score_rules(answer, case.get("rules", {}))
-        sim, sim_ok, min_sim = None, True, SIM_THRESHOLD
+
+        # Similarity is always recorded, but only gates a case that sets min_similarity.
+        sim, sim_ok, sim_note = None, True, []
         if case["reference"] and not case.get("rules", {}).get("refuse"):
-            min_sim = case.get("min_similarity", SIM_THRESHOLD)
             sim = score_similarity(answer, case["reference"])
-            sim_ok = sim >= min_sim
+            if "min_similarity" in case and sim < case["min_similarity"]:
+                sim_ok = False
+                sim_note = [f"similarity {sim} < {case['min_similarity']}"]
+
         j = judge(case, answer, case["reference"], model_name) if use_judge else \
             {"verdict": None, "reason": "judge disabled"}
 
         results.append({**base, "answer": answer, "passed": int(rules["passed"] and sim_ok),
                         "rules_passed": int(rules["passed"]),
-                        "rules_detail": json.dumps(rules["failures"] + ([] if sim_ok else [f"similarity {sim} < {min_sim}"])),
+                        "rules_detail": json.dumps(rules["failures"] + sim_note),
                         "similarity": sim, "judge_verdict": j["verdict"], "judge_reason": j["reason"],
                         "latency_ms": out["latency_ms"], "prompt_tokens": out["prompt_tokens"],
                         "completion_tokens": out["completion_tokens"], "from_cache": out["from_cache"]})
@@ -108,6 +116,11 @@ def main():
         if not r["passed"]:
             tag = "CRITICAL " if r["critical"] else ""
             print(f"FAIL {tag}{r['case_id']}: {r['question']}\n     -> {r['answer'][:120]!r}\n     {r['rules_detail']}")
+
+    errors = [r for r in out["results"] if r["error"]]
+    if errors:
+        print(f"\nWARNING: {len(errors)}/{m['total']} cases hit an LLM error. First error: {errors[0]['error']}")
+
     print(f"\nRun #{m['run_id']} | prompt={m['prompt_version']} | mode={m['mode']} | "
           f"passed {m['passed']}/{m['total']} ({m['pass_rate']:.0%}) | "
           f"critical failures: {m['critical_failed']} | avg latency {m['avg_latency_ms']} ms")
