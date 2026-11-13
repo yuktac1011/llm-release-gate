@@ -121,12 +121,17 @@ def _with_retries(fn):
 
 def call_llm(system: str, user: str, settings: dict) -> LLMResponse:
     mode = os.getenv("LLM_MODE", "mock")
-    start = time.perf_counter()
     if mode == "mock":
+        start = time.perf_counter()
         text = _mock(system, user)
         pt, ct = (len(system) + len(user)) // 4, len(text) // 4   # rough estimate
+        latency = (time.perf_counter() - start) * 1000
     elif mode == "openai_compat":
-        text, pt, ct = _with_retries(lambda: _real(system, user, settings))
+        def attempt():
+            t0 = time.perf_counter()
+            out = _real(system, user, settings)
+            return out, (time.perf_counter() - t0) * 1000
+        (text, pt, ct), latency = _with_retries(attempt)
     else:
         raise LLMError(f"Unknown LLM_MODE '{mode}'. Use 'mock' or 'openai_compat'.")
-    return LLMResponse(text, pt, ct, round((time.perf_counter() - start) * 1000, 1))
+    return LLMResponse(text, pt, ct, round(latency, 1))
