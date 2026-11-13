@@ -28,8 +28,7 @@ def _has(text: str, needle: str) -> bool:
     t, n = _norm(text), _norm(needle)
     if n in t:
         return True
-    # tolerate "250MB" vs "250 MB"
-    return " " in n and n.replace(" ", "") in t.replace(" ", "")
+    return n.replace(" ", "") in t.replace(" ", "")
 
 
 # ---------- 1) rule-based (deterministic, the hard gate) ----------
