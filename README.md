@@ -184,8 +184,8 @@ v3 and v4 were measured on the earlier 35-case suite. The three held-out cases w
 
 Demo PRs:
 
-- Failing: `demo/bad-prompt` (#1): [link]
-- Passing: `demo/good-prompt` (#2): [link]
+- Failing: `demo/bad-prompt` ([#1](https://github.com/yuktac1011/llm-release-gate/pull/1))
+- Passing: `demo/good-prompt` ([#2](https://github.com/yuktac1011/llm-release-gate/pull/2))
 
 The demo runs used mock mode. They prove the pipeline. The real-model evidence is the table above.
 
@@ -208,7 +208,7 @@ See `docs/acceptance-tests.md`. All five pass: critical break fails CI, harmless
 - **Rules check presence of facts, not correctness of the whole answer.** An answer can contain "14 days" and still say something wrong around it.
 - **Rules are wording-sensitive.** Several of my failures were test bugs, not model bugs (hyphen variants, plural forms, "9 am" vs "9am"). Each needed a human to read the answer and decide.
 - **Similarity measures overlap, not truth.** Fragile passes are flagged, but a concise correct answer can still score low.
-- **The judge is a model too.** It can be wrong or inconsistent, so it is advisory. [Fill in: where the judge and the rules disagreed, after running the judge.]
+- **The judge is a model too.** It can be wrong or inconsistent, so it is advisory. Where the judge and rules disagreed during real evaluation, the judge caught semantic correctness that strict string matching missed (e.g., non-breaking hyphens in `AES‑256` or curly apostrophes in `can’t help` failing rigid substring checks while the judge recognized the answer was correct). Conversely, an advisory judge cannot be the sole gatekeeper because it introduces its own latency, token costs, and variance.
 - **Small suite.** 38 cases, one run each at temperature 0. A pass rate here is not an accuracy claim.
 - **Injection coverage is thin.** Five direct attacks do not make the prompt injection-proof.
 - **The mock model is not evidence about prompt quality.** It only exercises the pipeline.
