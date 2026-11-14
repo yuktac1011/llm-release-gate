@@ -29,8 +29,6 @@ What I did myself:
 
 I used Claude (Anthropic) as a pair-programming assistant throughout. It drafted the first versions of the application code, the scorers, the runner, the compare and gate scripts, the dashboard and the CI workflow. It also proposed the initial test cases and the prompt versions. I reviewed the code, ran it, reported the output back, and we iterated on the failures together. Where AI suggested something that did not work (for example the first rewordings of the prompt for T05), the failure is recorded in `docs/failure-log.md`.
 
-Full breakdown: `docs/ownership.md`.
-
 ---
 
 ## How it works
@@ -64,7 +62,7 @@ evals/tests.yaml --> evals/runner.py --> evals/scorers.py
 | `evals/` | Test cases, scorers, runner, comparison, gate, SQLite storage |
 | `dashboard/` | Run history, failed cases, diff between two runs |
 | `.github/workflows/` | The PR gate |
-| `docs/` | Failure log, acceptance tests, ownership notes |
+| `docs/` | Failure log, acceptance tests |
 
 ---
 
