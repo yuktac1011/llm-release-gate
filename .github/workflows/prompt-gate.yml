@@ -1,0 +1,77 @@
+name: Prompt release gate
+
+on:
+  pull_request:
+    paths:
+      - "prompts/**"
+      - "app/**"
+      - "evals/**"
+      - "requirements.txt"
+      - ".github/workflows/**"
+
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      # Real model if the LLM_API_KEY secret exists, free deterministic mock otherwise
+      # (fork PRs never receive secrets, so they always use mock).
+      LLM_MODE: ${{ secrets.LLM_API_KEY != '' && 'openai_compat' || 'mock' }}
+      # The absolute floor only makes sense for a real model; mock mode checks regressions only.
+      GATE_MIN_PASS_RATE: ${{ secrets.LLM_API_KEY != '' && '0.90' || '0' }}
+      LLM_BASE_URL: https://api.groq.com/openai/v1
+      LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+      PYTHONUTF8: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Pick prompt versions
+        id: pick
+        run: |
+          PROD=$(tr -d '[:space:]' < prompts/PRODUCTION)
+          RANGE="origin/${{ github.base_ref }}...HEAD"
+          if git diff --name-only --diff-filter=M "$RANGE" -- "prompts/${PROD}.yaml" | grep -q .; then
+            echo "::error::Released prompt '${PROD}' was modified. Add a new version file instead."
+            exit 1
+          fi
+          CANDS=$(git diff --name-only --diff-filter=AM "$RANGE" -- 'prompts/*.yaml' | xargs -r -n1 basename | sed 's/\.yaml$//' | grep -vx "$PROD" | tr '\n' ' ')
+          echo "prod=$PROD" >> "$GITHUB_OUTPUT"
+          echo "cands=$CANDS" >> "$GITHUB_OUTPUT"
+          echo "Production: $PROD | Candidates: ${CANDS:-none}"
+
+      - name: Run eval suite and gate
+        env:
+          PROD: ${{ steps.pick.outputs.prod }}
+          CANDS: ${{ steps.pick.outputs.cands }}
+        run: |
+          DELAY=0
+          if [ "$LLM_MODE" = "openai_compat" ]; then DELAY=3; fi
+          python -m evals.runner --prompt "$PROD" --no-judge --delay $DELAY
+          STATUS=0
+          if [ -z "$CANDS" ]; then
+            python -m evals.gate --candidate "$PROD" || STATUS=$?
+          else
+            for C in $CANDS; do
+              python -m evals.runner --prompt "$C" --no-judge --delay $DELAY
+              python -m evals.gate --baseline "$PROD" --candidate "$C" || STATUS=$?
+            done
+          fi
+          exit $STATUS
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gate-report
+          path: evals/reports/

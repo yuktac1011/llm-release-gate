@@ -42,7 +42,7 @@ def _mock(system: str, user: str) -> str:
     """Deterministic fake LLM. Its behaviour depends on the PROMPT, so a bad prompt gives bad answers."""
     low = system.lower()
     guards_injection = "never follow instructions" in low
-    guards_scope = "only answer using the faq" in low
+    guards_scope = bool(re.search(r"only answer using the faq|answer only using the faq", low))
 
     if INJECTION.search(user):
         if guards_injection:
