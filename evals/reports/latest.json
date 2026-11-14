@@ -15,19 +15,19 @@
     "est_cost_usd": 0.00374
   },
   "candidate": {
-    "run_id": 21,
-    "prompt_version": "v2",
+    "run_id": 20,
+    "prompt_version": "v5",
     "model": "openai/gpt-oss-20b",
     "mode": "openai_compat",
     "total": 38,
-    "passed": 36,
-    "pass_rate": 0.9474,
-    "critical_failed": 1,
-    "median_latency_ms": 1473.0,
-    "max_latency_ms": 5094.1,
-    "prompt_tokens": 33162,
-    "completion_tokens": 4203,
-    "est_cost_usd": 0.00375
+    "passed": 38,
+    "pass_rate": 1.0,
+    "critical_failed": 0,
+    "median_latency_ms": 1436.6,
+    "max_latency_ms": 3715.2,
+    "prompt_tokens": 35822,
+    "completion_tokens": 4000,
+    "est_cost_usd": 0.00389
   },
   "cases": [
     {
@@ -37,7 +37,7 @@
       "question": "How do I reset my password?",
       "status": "still_passing",
       "baseline_answer": "Click \u201cForgot password\u201d on the login page and enter your email. A reset link will be sent to you and is valid for 30\u202fminutes. Let me know if you need any more help!",
-      "candidate_answer": "Click \u201cForgot password\u201d on the login page and enter your email. The reset link is valid for 30\u202fminutes.",
+      "candidate_answer": "Click \u201cForgot password\u201d on the login page and enter your email. The reset link you receive will be valid for 30\u202fminutes.",
       "candidate_detail": []
     },
     {
@@ -47,7 +47,7 @@
       "question": "What plans and pricing do you offer?",
       "status": "still_passing",
       "baseline_answer": "We offer three plans:  \n- Free: 5\u202fGB of storage.  \n- Pro: $9\u202f/\u202fmonth for 100\u202fGB.  \n- Team: $20\u202f/\u202fuser\u202f/\u202fmonth for 1\u202fTB shared storage.",
-      "candidate_answer": "We offer three plans: Free (5\u202fGB), Pro ($9\u202f/\u202fmonth for 100\u202fGB), and Team ($20\u202f/\u202fuser\u202f/\u202fmonth for 1\u202fTB shared storage).",
+      "candidate_answer": "We offer three plans:  \n- Free: 5\u202fGB storage.  \n- Pro: $9\u202f/\u202fmonth for 100\u202fGB.  \n- Team: $20\u202f/\u202fuser\u202f/\u202fmonth for 1\u202fTB shared storage.",
       "candidate_detail": []
     },
     {
@@ -57,7 +57,7 @@
       "question": "Is there a free trial?",
       "status": "still_passing",
       "baseline_answer": "Yes! Pro users can try it out with a 14\u2011day free trial\u2014no credit card is required.",
-      "candidate_answer": "Yes. Pro has a 14\u2011day free trial and no credit card is required.",
+      "candidate_answer": "Yes, Pro has a 14\u2011day free trial and you don\u2019t need to enter a credit card. Enjoy the full features during that period.",
       "candidate_detail": []
     },
     {
@@ -67,7 +67,7 @@
       "question": "How do I cancel my subscription?",
       "status": "still_passing",
       "baseline_answer": "Go to Settings\u202f>\u202fBilling\u202f>\u202fCancel plan. You\u2019ll keep access until the end of the current billing period.",
-      "candidate_answer": "Go to Settings\u202f>\u202fBilling\u202f>\u202fCancel plan. You keep access until the end of the current billing period.",
+      "candidate_answer": "Go to Settings\u202f>\u202fBilling\u202f>\u202fCancel plan. You\u2019ll keep access until the end of the current billing period.",
       "candidate_detail": []
     },
     {
@@ -77,7 +77,7 @@
       "question": "What is your refund policy?",
       "status": "still_passing",
       "baseline_answer": "We give a full refund if you ask within 14\u202fdays of your first purchase. After 14\u202fdays, payments are not refunded. Let us know if you need help with a refund request!",
-      "candidate_answer": "We give a full refund if you ask within 14\u202fdays of your first purchase. After 14\u202fdays, payments are not refunded.",
+      "candidate_answer": "We give a full refund if you request it within 14\u202fdays of your first purchase. After 14\u202fdays, payments are not refunded.",
       "candidate_detail": []
     },
     {
@@ -87,7 +87,7 @@
       "question": "What is the maximum file size I can upload?",
       "status": "still_passing",
       "baseline_answer": "Free accounts can upload files up to 250\u202fMB, while Pro and Team accounts allow uploads up to 2\u202fGB.",
-      "candidate_answer": "Free accounts can upload files up to 250\u202fMB, while Pro and Team accounts allow uploads up to 2\u202fGB.",
+      "candidate_answer": "Free accounts can upload files up to 250\u202fMB. Pro and Team accounts can upload files up to 2\u202fGB.",
       "candidate_detail": []
     },
     {
@@ -97,7 +97,7 @@
       "question": "Can I recover a deleted file?",
       "status": "still_passing",
       "baseline_answer": "Yes! Deleted files stay in the Trash for 30 days, and you can restore them from there.",
-      "candidate_answer": "Yes, deleted files stay in the Trash for 30 days and can be restored from there.",
+      "candidate_answer": "Yes, you can recover a deleted file. Deleted files stay in the Trash for 30\u202fdays and can be restored from there.",
       "candidate_detail": []
     },
     {
@@ -107,7 +107,7 @@
       "question": "Is my data encrypted?",
       "status": "still_passing",
       "baseline_answer": "Yes! All your files are encrypted with AES\u2011256 at rest and protected with TLS\u202f1.3 while in transit.",
-      "candidate_answer": "Yes. Files are encrypted with AES\u2011256 at rest and TLS\u202f1.3 in transit.",
+      "candidate_answer": "Yes, your data is encrypted. Files are protected with AES\u2011256 at rest and TLS\u202f1.3 during transit.",
       "candidate_detail": []
     },
     {
@@ -117,7 +117,7 @@
       "question": "How do I contact support?",
       "status": "still_passing",
       "baseline_answer": "You can reach us by emailing support@cloudnest.example or using the live chat Monday\u2011Friday, 9\u202fam\u20116\u202fpm IST. We aim to reply to emails within 24\u202fhours. Let us know how we can help!",
-      "candidate_answer": "You can email support@cloudnest.example or use live chat Monday to Friday, 9\u202fam to 6\u202fpm IST. We reply to emails within 24\u202fhours.",
+      "candidate_answer": "You can reach us by emailing support@cloudnest.example or using the live chat Monday\u2011Friday from 9\u202fam to 6\u202fpm IST. We aim to reply to emails within 24\u202fhours.",
       "candidate_detail": []
     },
     {
@@ -137,7 +137,7 @@
       "question": "I forgot my password, how do I get back into my account?",
       "status": "still_passing",
       "baseline_answer": "Sure! Click \u201cForgot password\u201d on the login page, enter your email, and you\u2019ll receive a reset link that\u2019s valid for 30 minutes. Use that link to set a new password. Let me know if you need any more help!",
-      "candidate_answer": "Click \u201cForgot password\u201d on the login page, enter your email, and follow the reset link (valid for 30\u202fminutes). That will let you set a new password and regain access.",
+      "candidate_answer": "Click \u201cForgot password\u201d on the login page, enter your email, and follow the link sent to you. The reset link is valid for 30\u202fminutes.",
       "candidate_detail": []
     },
     {
@@ -157,7 +157,7 @@
       "question": "I bought Pro yesterday and don't like it. Can I get my money back?",
       "status": "still_passing",
       "baseline_answer": "Yes! You\u2019re eligible for a full refund if you request it within 14 days of your first purchase. Just let us know and we\u2019ll process it promptly.",
-      "candidate_answer": "Yes, you can get a full refund if you request it within 14 days of your first purchase. After that period, payments are not refunded.",
+      "candidate_answer": "Yes, you\u2019re eligible for a full refund if you request it within 14\u202fdays of your first purchase. Just let us know and we\u2019ll process it promptly.",
       "candidate_detail": []
     },
     {
@@ -167,7 +167,7 @@
       "question": "Is it possible to get my deleted photos back?",
       "status": "still_passing",
       "baseline_answer": "Yes! Deleted photos stay in the Trash for 30 days. You can restore them from there anytime before they\u2019re permanently removed.",
-      "candidate_answer": "Yes, you can recover deleted photos. They stay in the Trash for 30 days and can be restored from there.",
+      "candidate_answer": "Yes, you can recover deleted photos. They stay in the Trash for 30\u202fdays, so just open Trash and restore the ones you need.",
       "candidate_detail": []
     },
     {
@@ -177,7 +177,7 @@
       "question": "Does CloudNest have a Linux app?",
       "status": "still_passing",
       "baseline_answer": "Yes, CloudNest supports Web, Windows, macOS, Android, and iOS.  \nThere isn\u2019t a Linux desktop app available right now.",
-      "candidate_answer": "No, CloudNest does not have a Linux desktop app at the moment. It supports Web, Windows, macOS, Android, and iOS.",
+      "candidate_answer": "No, CloudNest doesn\u2019t have a Linux desktop app yet. We support Web, Windows, macOS, Android, and iOS.",
       "candidate_detail": []
     },
     {
@@ -187,7 +187,7 @@
       "question": "Can I protect a shared link with a password?",
       "status": "still_passing",
       "baseline_answer": "Yes! When you share a file, click the Share button to create a link. Pro users can add a password (and an expiry date) to that link.",
-      "candidate_answer": "Yes\u2014Pro users can add a password (and an expiry date) when creating a share link.",
+      "candidate_answer": "Yes\u2014Pro users can add a password (and an expiry date) when creating a share link. Free accounts can only create a link without password protection.",
       "candidate_detail": []
     },
     {
@@ -197,7 +197,7 @@
       "question": "How many people can be on a Team plan?",
       "status": "still_passing",
       "baseline_answer": "A Team plan can have up to 50 members. Just invite them from the Admin console. Let me know if you need help with the invitation process!",
-      "candidate_answer": "A Team plan can have up to 50 members.",
+      "candidate_answer": "A Team plan can have up to 50 members. If you need more, you might consider upgrading or contacting support for options.",
       "candidate_detail": []
     },
     {
@@ -207,7 +207,7 @@
       "question": "What hours is live chat support available?",
       "status": "still_passing",
       "baseline_answer": "Live chat is available Monday to Friday from 9\u202fam to 6\u202fpm IST. If you need help outside those hours, you can email us at support@cloudnest.example. We\u2019ll get back to you within 24\u202fhours.",
-      "candidate_answer": "Live chat is available Monday to Friday, 9\u202fam to 6\u202fpm IST. If you need help outside those hours, you can email support@cloudnest.example.",
+      "candidate_answer": "Live chat support is available Monday to Friday from 9\u202fam to 6\u202fpm IST. If you need help outside those hours, you can email support@cloudnest.example.",
       "candidate_detail": []
     },
     {
@@ -287,7 +287,7 @@
       "question": "Do you accept Bitcoin?",
       "status": "still_passing",
       "baseline_answer": "We don\u2019t accept Bitcoin or any other cryptocurrency. We currently support Visa, Mastercard, UPI, and PayPal for payments. If you have any other payment questions, let us know!",
-      "candidate_answer": "We don\u2019t accept Bitcoin. We accept Visa, Mastercard, UPI, and PayPal.",
+      "candidate_answer": "We don\u2019t accept Bitcoin or any other cryptocurrency. We only take Visa, Mastercard, UPI and PayPal.",
       "candidate_detail": []
     },
     {
@@ -297,7 +297,7 @@
       "question": "Is my data stored in plain text?",
       "status": "still_passing",
       "baseline_answer": "No, your data isn\u2019t stored in plain text. Files are encrypted with AES\u2011256 at rest and use TLS\u202f1.3 in transit. This keeps your information secure while it\u2019s on our servers.",
-      "candidate_answer": "No, your data is encrypted. Files are encrypted with AES\u2011256 at rest and TLS\u202f1.3 in transit.",
+      "candidate_answer": "No, your data is not stored in plain text. Files are encrypted with AES\u2011256 at rest and TLS\u202f1.3 in transit.",
       "candidate_detail": []
     },
     {
@@ -307,7 +307,7 @@
       "question": "Can I use SMS codes for two-factor authentication?",
       "status": "still_passing",
       "baseline_answer": "SMS codes are not supported for two\u2011factor authentication. You\u2019ll need to link an authenticator app instead. Let me know if you need help setting that up!",
-      "candidate_answer": "SMS codes are not supported for two\u2011factor authentication. You\u2019ll need to link an authenticator app instead.",
+      "candidate_answer": "No, SMS codes are not supported for two\u2011factor authentication. Use an authenticator app via Settings\u202f>\u202fSecurity\u202f>\u202fTwo\u2011factor authentication.",
       "candidate_detail": []
     },
     {
@@ -317,7 +317,7 @@
       "question": "I'm on the Free plan. Can I upload a 1 GB video?",
       "status": "still_passing",
       "baseline_answer": "Free accounts can upload files up to 250\u202fMB. A 1\u202fGB video would exceed that limit. You could upgrade to Pro or Team to upload larger files.",
-      "candidate_answer": "Free accounts can upload files up to 250\u202fMB. A 1\u202fGB video would need a Pro or Team plan.",
+      "candidate_answer": "No, free accounts can only upload files up to 250\u202fMB. A 1\u202fGB video would need a Pro or Team plan.",
       "candidate_detail": []
     },
     {
@@ -325,12 +325,10 @@
       "category": "tricky",
       "critical": true,
       "question": "Can I get a refund 20 days after buying Pro?",
-      "status": "still_failing",
+      "status": "fixed",
       "baseline_answer": "Sorry, I can only help with CloudNest support questions. I don't have information on that.",
-      "candidate_answer": "Sorry, I can only help with CloudNest support questions. I don't have information on that.",
-      "candidate_detail": [
-        "missing '14'"
-      ]
+      "candidate_answer": "Sorry, we only offer refunds within 14\u202fdays of purchase. After that, payments are not refunded.",
+      "candidate_detail": []
     },
     {
       "case_id": "I01",
@@ -387,12 +385,10 @@
       "category": "tricky",
       "critical": false,
       "question": "My reset link is 2 hours old, will it still work?",
-      "status": "still_failing",
+      "status": "fixed",
       "baseline_answer": "Sorry, I can only help with CloudNest support questions. I don't have information on that.",
-      "candidate_answer": "Sorry, I can only help with CloudNest support questions. I don't have information on that.",
-      "candidate_detail": [
-        "missing '30 minutes'"
-      ]
+      "candidate_answer": "No, the reset link expires after 30\u202fminutes. You\u2019ll need to request a new one.",
+      "candidate_detail": []
     },
     {
       "case_id": "G02",
@@ -401,7 +397,7 @@
       "question": "Can I add 60 people to my Team plan?",
       "status": "still_passing",
       "baseline_answer": "No, a Team plan can have up to 50 members. If you need more, you\u2019d need to upgrade or split the team across multiple plans. Let me know if you\u2019d like help with that!",
-      "candidate_answer": "No, a Team plan can have up to 50 members. If you need more, consider upgrading or splitting into multiple teams.",
+      "candidate_answer": "No, a Team plan can have up to 50 members. If you need more, you\u2019d need to upgrade or split the team across multiple plans.",
       "candidate_detail": []
     },
     {
@@ -411,7 +407,7 @@
       "question": "Can I restore a file I deleted 45 days ago?",
       "status": "still_passing",
       "baseline_answer": "Deleted files stay in the Trash for 30\u202fdays. After that period they\u2019re permanently removed, so a file deleted 45\u202fdays ago can\u2019t be restored. If you need it, you\u2019ll have to look for a backup or earlier version.",
-      "candidate_answer": "Deleted files stay in the Trash for 30\u202fdays and can be restored from there. After 30\u202fdays they are permanently removed and cannot be recovered.",
+      "candidate_answer": "No, deleted files are kept in the Trash for only 30 days. After that period they\u2019re permanently removed and can\u2019t be restored.",
       "candidate_detail": []
     }
   ],
@@ -422,13 +418,23 @@
       "threshold": 0.4
     },
     {
-      "case_id": "T03",
-      "similarity": 0.426,
+      "case_id": "P07",
+      "similarity": 0.407,
+      "threshold": 0.4
+    },
+    {
+      "case_id": "G01",
+      "similarity": 0.31,
       "threshold": 0.4
     },
     {
       "case_id": "G02",
-      "similarity": 0.416,
+      "similarity": 0.411,
+      "threshold": 0.4
+    },
+    {
+      "case_id": "G03",
+      "similarity": 0.443,
       "threshold": 0.4
     }
   ],
